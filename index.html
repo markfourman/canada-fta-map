@@ -27,7 +27,7 @@ button,select{font:inherit;min-height:44px;padding:8px 14px;border:2px solid var
 select{max-width:100%;min-width:0}
 .controls select{flex:1 1 200px}
 button[aria-pressed=true],button[aria-expanded=true]{background:var(--ink);color:#fff}
-button:focus-visible,input:focus-visible,select:focus-visible,path.c:focus-visible,a:focus-visible,h2:focus-visible,aside:focus-visible{outline:4px solid #000;outline-offset:2px}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible,h2:focus-visible,aside:focus-visible{outline:4px solid #000;outline-offset:2px}
 a{color:#0b3d91}
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:6px 0;padding:0;list-style:none;font-size:.9rem}
 .legend li{display:flex;align-items:center;gap:6px}
@@ -38,6 +38,9 @@ svg{display:block;width:100%;height:auto;touch-action:none}
 path.c{stroke:#fff;stroke-width:.4;cursor:pointer}
 path.c.sel{stroke:#000;stroke-width:.7}
 path.c.dim{opacity:.25}
+path.c:focus{outline:none}
+path.c:focus-visible{outline:none;stroke:#000;stroke-width:2.5}
+.dt strong{font-size:1.15em}
 .zoom{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:4px}
 .zoom button{width:44px;padding:0;font-weight:700}
 aside{background:#fff;border:2px solid var(--line);border-radius:12px;padding:14px;min-height:200px}
@@ -218,7 +221,7 @@ function tradeBlock(id){
     <p>Canadian imports from ${nm}: ${T.imp||NV}</p>
     ${T.two?`<p>Two-way goods trade: ${T.two} (exports + imports)</p>`:''}
     ${hl?`<p class="small"><strong>Named in the source for ${META.trade.year}:</strong> ${hl}</p>`:''}
-    <p class="small">Top-5 product lists: ${NV} yet.</p>
+    ${t.top?`<div class="small"><strong>Top 5 exports to ${nm}</strong> (US$, ${esc(t.top.year)}):<ol>${t.top.exp.map(x=>`<li>${esc(x)}</li>`).join('')}</ol><strong>Top 5 imports from ${nm}:</strong><ol>${t.top.imp.map(x=>`<li>${esc(x)}</li>`).join('')}</ol><a href="${t.top.src}">Source</a>: ${esc(t.top.label)}</div>`:`<p class="small">Top-5 product lists: ${NV} yet.</p>`}
     ${t.note?`<p class="small">${esc(t.note)}</p>`:''}
     <p class="small"><a href="${META.trade.source}">Source</a>: ${esc(META.trade.label)}</p></div>`;
 }
@@ -253,7 +256,7 @@ function panel(id,quiet){
       const yrs=live&&d?` · ${age(d)}`:'';
       return `<div class="agr"><span class="badge ${a.status}" style="background:var(--${a.status})">${ICON[a.status]} ${LABEL[a.status]}</span>
       <p><strong>${a.key}</strong>: ${esc(a.name)}</p>
-      ${d?`<p>${lab}: ${d}${yrs} ${v?'':'<span class="nv">(not verified)</span>'}</p>`:''}
+      ${d?`<p class="dt"><strong>${lab}: ${d}</strong>${yrs} ${v?'':'<span class="nv">(not verified)</span>'}</p>`:''}
       ${a.note?`<p class="small">${esc(a.note)}</p>`:''}</div>`}).join('')+
     tradeBlock(id)+
     `<div class="agr"><strong>For customs</strong>${customsBlock(list,id)}</div>
@@ -357,6 +360,9 @@ const MAPSRC=['vendor/countries-50m.json','countries-50m.json','https://cdn.jsde
 const loadMap=i=>fetch(MAPSRC[i]).then(r=>{if(!r.ok)throw 0;return r.json()}).catch(e=>{if(i+1<MAPSRC.length)return loadMap(i+1);throw e});
 loadMap(0).then(world=>{
   const feats=topojson.feature(world,world.objects.countries).features.filter(f=>f.id!=='010');
+  feats.forEach(f=>{if(f.id&&f.properties&&f.properties.name&&!NAMES[f.id])NAMES[f.id]=f.properties.name});
+  const cmpSorted=Object.keys(NAMES).filter(k=>k!=='124').sort((a,b)=>NAMES[a].localeCompare(NAMES[b])).map(k=>`<option value="${k}">${esc(NAMES[k])}</option>`).join('');
+  ['cmpA','cmpB'].forEach(i=>{document.getElementById(i).innerHTML='<option value="">Choose a country</option>'+cmpSorted});
   const proj=d3.geoNaturalEarth1().fitSize([960,500],{type:'FeatureCollection',features:feats});
   const path=d3.geoPath(proj);g=svg.append('g');
   paths=g.selectAll('path').data(feats).join('path').attr('class','c').attr('d',path)

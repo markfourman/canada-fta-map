@@ -182,5 +182,8 @@ const TRADE = {
   "400": { exp: null, imp: 168.8 },
   "591": { exp: 600, imp: null },
   "356": { exp: 3900, imp: 9700, hlExp: "Exports fell, driven by vegetables and mineral fuels.", hlImp: "Leading imports: diamonds, office machines and medicaments." },
-  "076": { exp: 3100, imp: 11600, hlExp: "Growth driven mainly by fertilizer." }
+  "076": { exp: 3100, imp: 11600, hlExp: "Growth driven mainly by fertilizer.",
+    top: { year: 2025, label: "UN Comtrade data as shown by Trading Economics (US dollars; differs from the Statistics Canada totals above).", src: "https://tradingeconomics.com/canada/exports/brazil",
+      exp: ["Fertilizers: US$1.17 B","Machinery, nuclear reactors, boilers: US$455.46 M","Electrical and electronic equipment: US$69.41 M","Aircraft and spacecraft: US$61.84 M","Optical, photo, technical and medical apparatus: US$58.46 M"],
+      imp: ["Pearls, precious stones, metals, coins: US$3.10 B","Inorganic chemicals, precious metal compounds: US$1.64 B","Sugars and sugar confectionery: US$546.25 M","Machinery, nuclear reactors, boilers: US$482.18 M","Coffee, tea, maté, spices: US$382.57 M"] } }
 };
