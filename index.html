@@ -212,18 +212,31 @@ const sel=document.getElementById('agrSel');
 for(const [k,a] of Object.entries(AGREEMENTS)) if(!a.historical) sel.insertAdjacentHTML('beforeend',`<option value="${k}">${k}: ${a.name}</option>`);
 
 // ---------- Details panel ----------
+function topList(arr){return '<ol>'+arr.map(x=>`<li>${esc(x[0])}: ${fmtM(x[1])}</li>`).join('')+'</ol>'}
 function tradeBlock(id){
-  const T=tradeOf(id),nm=esc(NAMES[id]);
-  if(!T) return `<div class="agr"><strong>Trade with Canada</strong><p>${NV}. The source page gave no ${META.trade.year} figure for this country.</p></div>`;
-  const t=T.t,hl=(t.hlExp?`Exports: ${esc(t.hlExp)} `:'')+(t.hlImp?`Imports: ${esc(t.hlImp)}`:'');
-  return `<div class="agr"><strong>Trade with Canada (${META.trade.year})</strong>
+  const T=tradeOf(id),nm=esc(NAMES[id]),Y=ISED[id],y=META.ytd;
+  let h='';
+  if(!T){
+    h+=`<div class="agr"><strong>Trade with Canada</strong><p>${NV}: no ${META.trade.year} full-year figure for this country in the source.</p>`;
+    if(Y&&(Y.expTotal!=null||Y.impTotal!=null))h+=`<p><strong>${y.label}</strong> (partial year)</p><p>Canadian exports to ${nm}: ${fmtM(Y.expTotal)||NV}</p><p>Canadian imports from ${nm}: ${fmtM(Y.impTotal)||NV}</p>`;
+    h+='</div>';
+  }else{
+    const t=T.t,hl=(t.hlExp?`Exports: ${esc(t.hlExp)} `:'')+(t.hlImp?`Imports: ${esc(t.hlImp)}`:'');
+    h+=`<div class="agr"><strong>Trade with Canada (${META.trade.year})</strong>
     <p>Canadian exports to ${nm}: ${T.exp||NV}</p>
     <p>Canadian imports from ${nm}: ${T.imp||NV}</p>
     ${T.two?`<p>Two-way goods trade: ${T.two} (exports + imports)</p>`:''}
     ${hl?`<p class="small"><strong>Named in the source for ${META.trade.year}:</strong> ${hl}</p>`:''}
-    ${t.top?`<div class="small"><strong>Top 5 exports to ${nm}</strong> (US$, ${esc(t.top.year)}):<ol>${t.top.exp.map(x=>`<li>${esc(x)}</li>`).join('')}</ol><strong>Top 5 imports from ${nm}:</strong><ol>${t.top.imp.map(x=>`<li>${esc(x)}</li>`).join('')}</ol><a href="${t.top.src}">Source</a>: ${esc(t.top.label)}</div>`:`<p class="small">Top-5 product lists: ${NV} yet.</p>`}
     ${t.note?`<p class="small">${esc(t.note)}</p>`:''}
     <p class="small"><a href="${META.trade.source}">Source</a>: ${esc(META.trade.label)}</p></div>`;
+  }
+  if(Y&&(Y.exp||Y.imp)){
+    h+=`<div class="agr"><strong>Top products (${y.label})</strong>
+    ${Y.exp?`<p class="small"><strong>Canadian exports to ${nm}</strong></p>${topList(Y.exp)}`:`<p class="small">Exports: ${NV}</p>`}
+    ${Y.imp?`<p class="small"><strong>Canadian imports from ${nm}</strong></p>${topList(Y.imp)}`:`<p class="small">Imports: ${NV}</p>`}
+    <p class="small"><a href="${y.source}">Source</a>: Innovation, Science and Economic Development Canada, Trade Data Online. ${esc(y.note)} Partial year, so it is not comparable with the ${META.trade.year} totals.</p></div>`;
+  }else h+=`<div class="agr"><p class="small">Top products: ${NV}</p></div>`;
+  return h;
 }
 function customsBlock(list,id){
   if(year<2026) return '<p>Customs details show today\'s rules. Move the slider back to 2026.</p>';
@@ -247,7 +260,7 @@ function panel(id,quiet){
   if(id==='124'){
     p.innerHTML=close+'<h2 tabindex="-1">Canada</h2><p>Home country. Pick a partner to see its agreements.</p>';
   }else if(!list.length){
-    p.innerHTML=close+`<h2 tabindex="-1">${esc(name)}</h2><p>No free trade agreement with Canada${year<2026?' in '+year:''}. Trade may still happen under World Trade Organization rules (most-favoured-nation rates).</p>`;
+    p.innerHTML=close+`<h2 tabindex="-1">${esc(name)}</h2><p>No free trade agreement with Canada${year<2026?' in '+year:''}. Trade may still happen under World Trade Organization rules (most-favoured-nation rates).</p>`+(year>=2026&&id!=='124'?tradeBlock(id):'');
   }else{
     p.innerHTML=close+`<h2 tabindex="-1">${esc(name)}</h2>`+list.sort((a,b)=>RANK[b.status]-RANK[a.status]).map(a=>{
       const md=a.memberDates&&a.memberDates[id];const d=md?md.date:a.date;const v=md?md.verified:a.dateVerified;

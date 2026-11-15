@@ -29,7 +29,7 @@ Anything not verified shows "Not verified" in the app. Nothing is filled from me
 | UAE CEPA signed 2026-10-27, in force expected 2027 | Verified | Prime Minister's Office; Canadian Press via Hürriyet Daily News |
 | 2025 exports and imports (31 countries: 22 with both figures, 9 with one) | Verified, rounded to C$0.1 B | Statistics Canada Table 12-10-0171-01 as published by Global Affairs Canada |
 | Trade for the other partner countries (small EU members, Iceland, Liechtenstein, NZ, Brunei, Costa Rica, Honduras, Ukraine and others) | **Not in the source page**, left blank | n/a |
-| Top-5 export and import products | Brazil only (UN Comtrade via Trading Economics, 2025, US$). **Not filled for other countries.** The app shows "named in the source" 2025 highlights where GAC names them | n/a |
+| Top-5 products per country, and Jan-Sep 2026 totals for every country (223 with data) | Verified from the files; partial year; assumed Canadian dollars (totals match Statistics Canada scale, e.g. Japan) | ISED Trade Data Online, 2026-09 files |
 | CBSA tariff treatment names | Verified | CBSA Customs Tariff 2026, list of countries and tariff treatments |
 | Tariff treatment codes for all 18 treatments with a code: UST 10, MXT 11, CIAT 13, CT 14, CRT 21, IT 22, NT 23, SLT 24, PT 25, COLT 26, JT 27, PAT 28, HNT 29, KRT 30, CEUT 31, UAT 32, CPTPT 33, UKT 34 | Verified, official source | CBSA Memorandum D11-4-2 (2022), section 53 |
 | Tariff treatment code 35 (CPUKT) | Verified | CBSA Customs Notice 26-22 |
@@ -66,7 +66,7 @@ Anything not verified shows "Not verified" in the app. Nothing is filled from me
 - Government of Canada. (2009). *New trade agreement eliminates barriers, opens doors to European markets* [news release]. https://www.canada.ca/en/news/archive/2009/07/new-trade-agreement-eliminates-barriers-opens-doors-european-markets.html
 - Global Affairs Canada. (n.d.). *Canada-Israel Free Trade Agreement: Chapter Three, Rules of origin.* https://www.international.gc.ca/trade-commerce/trade-agreements-accords-commerciaux/agr-acc/israel/fta-ale/text-texte/03.aspx
 - *CIFTA Rules of Origin Regulations*, SOR/2019-276. (2019). *Canada Gazette, Part II, 153*(17). https://gazette.gc.ca/rp-pr/p2/2019/2019-08-21/html/sor-dors276-eng.html
-- Trading Economics & UN Comtrade. (2026). *Canada exports to Brazil* and *Canada imports from Brazil* [Data sets]. https://tradingeconomics.com/canada/exports/brazil ; https://tradingeconomics.com/canada/imports/brazil
+- Innovation, Science and Economic Development Canada. (2026). *Trade Data Online: Canadian domestic exports and imports by HS2, province and country, January to September 2026* [Data set]. https://ised-isde.canada.ca/site/trade-data-online/en
 - Global Affairs Canada. (n.d.). *Canada-Chile Free Trade Agreement.* https://international.gc.ca/trade-commerce/trade-agreements-accords-commerciaux/agr-acc/chile-chili/index.aspx?lang=eng
 - Global Affairs Canada, Office of the Chief Economist. (2026). *Highlights of Canada's merchandise trade performance: 2025 update* (data: Statistics Canada Table 12-10-0171-01, retrieved 2026-05-05). https://international.canada.ca/en/global-affairs/corporate/reports/chief-economist/annual/2025
 - Prime Minister of Canada. (2026, October). *Canada and the UAE sign the Comprehensive Economic Partnership Agreement.* https://www.pm.gc.ca/en/node/54483
