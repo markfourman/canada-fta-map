@@ -94,7 +94,7 @@ const AGREEMENTS = {
                proofSrc: "https://www.cbsa-asfc.gc.ca/import/origin-origine-eng.html", proofLabel: "CBSA: Proof of origin" } },
   CIFTA:   { name: "Canada-Israel Free Trade Agreement", status: "inforce", date: "1997-01-01", dateVerified: true,
              note: "Modernized agreement in force 2019-09-01.", members: ["376"],
-             customs: { tariff: [ { abbr:"CIAT", name:"Canada-Israel Agreement Tariff", code:13, codeSrc:"cbsa" } ],
+             customs: { tariff: [ { abbr:"CIAT", name:"Canada-Israel Agreement Tariff", code:13, codeSrc:"cbsa" } ], chapters: "Chapter Three (Rules of Origin), in force in Canada through SOR/2019-276",
                proof: "Form B239, completed by the exporter.",
                proofSrc: "https://www.cbsa-asfc.gc.ca/import/origin-origine-eng.html", proofLabel: "CBSA: Proof of origin" } },
   CJFTA:   { name: "Canada-Jordan Free Trade Agreement", status: "inforce", date: "2012-10-01", dateVerified: true, members: ["400"],

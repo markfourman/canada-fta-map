@@ -34,7 +34,7 @@ Anything not verified shows "Not verified" in the app. Nothing is filled from me
 | Tariff treatment codes for all 18 treatments with a code: UST 10, MXT 11, CIAT 13, CT 14, CRT 21, IT 22, NT 23, SLT 24, PT 25, COLT 26, JT 27, PAT 28, HNT 29, KRT 30, CEUT 31, UAT 32, CPTPT 33, UKT 34 | Verified, official source | CBSA Memorandum D11-4-2 (2022), section 53 |
 | Tariff treatment code 35 (CPUKT) | Verified | CBSA Customs Notice 26-22 |
 | Indonesia tariff treatment name and code | **Not verified.** The agreement is not yet in force; the app shows "Not verified" after 2026-12-01 until the CBSA publishes it | n/a |
-| Origin chapters per agreement | Verified (Customs Act schedule dated 2024-07-01). **Not verified: the Canada-Israel FTA origin chapter, which that schedule does not list** | Customs Act, Schedule, Part 5 |
+| Origin chapters per agreement | Verified (Customs Act schedule dated 2024-07-01). Israel: Chapter Three, from the agreement text and the CIFTA Rules of Origin Regulations (SOR/2019-276) | Customs Act, Schedule, Part 5 |
 | Proof of origin for all 15 agreements (form or declaration, who completes it) | Verified, official source | CBSA, Proof of origin page |
 
 ### Known discrepancies
@@ -64,6 +64,8 @@ Anything not verified shows "Not verified" in the app. Nothing is filled from me
 - Global Affairs Canada. (2026, July). *Canada and Ecuador sign a free trade agreement.* https://www.canada.ca/en/global-affairs/news/2026/07/canada-and-ecuador-sign-a-free-trade-agreement.html
 - Global Affairs Canada. (n.d.). *Canada-Indonesia CEPA: Background.* https://www.international.gc.ca/trade-commerce/trade-agreements-accords-commerciaux/agr-acc/indonesia-indonesie/cepa-apeg/background-contexte.aspx?lang=eng
 - Government of Canada. (2009). *New trade agreement eliminates barriers, opens doors to European markets* [news release]. https://www.canada.ca/en/news/archive/2009/07/new-trade-agreement-eliminates-barriers-opens-doors-european-markets.html
+- Global Affairs Canada. (n.d.). *Canada-Israel Free Trade Agreement: Chapter Three, Rules of origin.* https://www.international.gc.ca/trade-commerce/trade-agreements-accords-commerciaux/agr-acc/israel/fta-ale/text-texte/03.aspx
+- *CIFTA Rules of Origin Regulations*, SOR/2019-276. (2019). *Canada Gazette, Part II, 153*(17). https://gazette.gc.ca/rp-pr/p2/2019/2019-08-21/html/sor-dors276-eng.html
 - Global Affairs Canada. (n.d.). *Canada-Chile Free Trade Agreement.* https://international.gc.ca/trade-commerce/trade-agreements-accords-commerciaux/agr-acc/chile-chili/index.aspx?lang=eng
 - Global Affairs Canada, Office of the Chief Economist. (2026). *Highlights of Canada's merchandise trade performance: 2025 update* (data: Statistics Canada Table 12-10-0171-01, retrieved 2026-05-05). https://international.canada.ca/en/global-affairs/corporate/reports/chief-economist/annual/2025
 - Prime Minister of Canada. (2026, October). *Canada and the UAE sign the Comprehensive Economic Partnership Agreement.* https://www.pm.gc.ca/en/node/54483
