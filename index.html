@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Canada's Free Trade Map</title>
+<meta name="description" content="Interactive map of Canada's free trade agreements: which countries, which agreement, when it took effect, plus trade and customs details. For customs professionals and supply chain students.">
+<meta property="og:title" content="Canada's Free Trade Map">
+<meta property="og:description" content="Click a country to see which free trade agreement applies, when it started, 2025 trade with Canada, and the CBSA tariff treatment. Compare two countries side by side.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://markfourman.github.io/canada-fta-map/">
+<meta property="og:image" content="https://markfourman.github.io/canada-fta-map/preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%81%3C/text%3E%3C/svg%3E">
+<style>
+:root{--red:#b5121b;--ink:#1a1a1a;--bg:#f7f7f5;--line:#c9c9c4;
+--inforce:#0b5394;--provisional:#3d85c6;--signed:#b45f06;--negotiating:#f6b26b;--none:#e4e4e0}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--bg)}
+header{background:var(--red);color:#fff;padding:12px 16px;border-bottom:6px solid #7d0c13}
+header h1{margin:0;font-size:1.4rem}
+header p{margin:2px 0 0;font-size:.9rem}
+.wrap{max-width:1200px;margin:0 auto;padding:12px}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
+input[type=search]{font:inherit;min-height:44px;padding:8px 12px;border:2px solid var(--ink);border-radius:8px;flex:1 1 220px}
+button,select{font:inherit;min-height:44px;padding:8px 14px;border:2px solid var(--ink);border-radius:8px;background:#fff;cursor:pointer}
+select{max-width:100%;min-width:0}
+.controls select{flex:1 1 200px}
+button[aria-pressed=true],button[aria-expanded=true]{background:var(--ink);color:#fff}
+button:focus-visible,input:focus-visible,select:focus-visible,path.c:focus-visible,a:focus-visible,h2:focus-visible,aside:focus-visible{outline:4px solid #000;outline-offset:2px}
+a{color:#0b3d91}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:6px 0;padding:0;list-style:none;font-size:.9rem}
+.legend li{display:flex;align-items:center;gap:6px}
+.sw{width:22px;height:16px;border:1px solid #333;display:inline-block}
+.layout{display:grid;grid-template-columns:1fr 340px;gap:12px}
+.mapbox{background:#fff;border:2px solid var(--line);border-radius:12px;position:relative;overflow:hidden}
+svg{display:block;width:100%;height:auto;touch-action:none}
+path.c{stroke:#fff;stroke-width:.4;cursor:pointer}
+path.c.sel{stroke:#000;stroke-width:.7}
+path.c.dim{opacity:.25}
+.zoom{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:4px}
+.zoom button{width:44px;padding:0;font-weight:700}
+aside{background:#fff;border:2px solid var(--line);border-radius:12px;padding:14px;min-height:200px}
+aside h2{margin:0 0 4px}
+h2[tabindex="-1"]:focus{outline:none}
+.badge{display:inline-block;font-size:.8rem;font-weight:700;padding:2px 8px;border-radius:999px;color:#fff;margin:2px 4px 2px 0}
+.badge.negotiating{color:#1a1a1a}
+.nv{color:#8f4300;font-weight:700}
+.agr{border-top:1px solid var(--line);padding:8px 0}
+.agr p{margin:4px 0}
+.cu{background:#f3f6fa;border-left:4px solid var(--inforce);padding:2px 8px;margin:6px 0}
+.small{font-size:.85rem;color:#333}
+table{border-collapse:collapse;width:100%;font-size:.92rem;background:#fff}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th button{border:0;min-height:0;padding:0;background:none;font-weight:700}
+.timeline{display:flex;align-items:center;gap:10px;margin:8px 0}
+.timeline input{flex:1;min-height:44px}
+.hint{margin:4px 0 8px;font-size:.9rem}
+.skip{position:absolute;left:-9999px;background:#fff;border:2px solid #000;padding:8px 12px;z-index:50}
+.skip:focus{left:8px;top:8px}
+#cmp{margin-top:14px;background:#fff;border:2px solid var(--line);border-radius:12px;padding:14px}
+#cmp h2{margin:0 0 8px}
+.cmpsel{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:10px}
+.cmpsel label{display:flex;flex-direction:column;font-weight:600;gap:2px;flex:1 1 140px}
+.tscroll{overflow-x:auto}
+#cmpOut table{table-layout:fixed}
+#cmpOut th,#cmpOut td{overflow-wrap:anywhere;font-size:.88rem}
+#cmpOut th[scope=row]{background:#f3f3f0;width:28%}
+.cmpbtn{margin-top:8px}
+.close{display:none;float:right}
+footer{font-size:.85rem;padding:16px 0 32px}
+.sr{position:absolute;left:-9999px}
+.notice{background:#fff3cd;border:2px solid #b45f06;border-radius:8px;padding:10px;margin:8px 0}
+@media (max-width:820px){
+  .layout{grid-template-columns:1fr}
+  aside#panel{display:none}
+  aside#panel.open{display:block;position:fixed;left:0;right:0;bottom:0;max-height:46vh;overflow:auto;z-index:30;border-radius:16px 16px 0 0;box-shadow:0 -6px 20px rgba(0,0,0,.3)}
+  .close{display:inline-block}
+  body.sheet{padding-bottom:48vh}
+  .zoom{position:static;flex-direction:row;justify-content:flex-end;padding:6px 8px;background:#fff;border-top:1px solid var(--line)}
+  .zoom button{width:56px}
+  .timeline{flex-wrap:wrap}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header>
+  <h1><span aria-hidden="true">🍁 </span>Canada's Free Trade Map</h1>
+  <p id="counter">Loading…</p>
+</header>
+<div class="wrap">
+  <div class="controls">
+    <label class="sr" for="q">Search countries or agreements</label>
+    <input id="q" type="search" placeholder="Search a country or agreement (e.g. Japan, CPTPP)">
+    <label class="sr" for="agrSel">Filter by agreement</label>
+    <select id="agrSel"><option value="">All agreements</option></select>
+    <button id="viewBtn" aria-pressed="false">List view</button>
+    <button id="cmpBtn" aria-expanded="false" aria-controls="cmp">Compare</button>
+  </div>
+  <ul class="legend" id="legend" aria-label="Map legend"></ul>
+  <div class="timeline">
+    <label for="year">Show agreements in force by year:</label>
+    <input id="year" type="range" min="1994" max="2026" value="2026">
+    <output id="yearOut" for="year">2026</output>
+  </div>
+  <p class="hint" id="hint">Tap or press Enter on a country for details (Escape goes back to the map). Keyboard users: List view skips the map.</p>
+  <div id="notice"></div>
+  <a class="skip" href="#panel">Skip map, go to country details</a>
+  <div class="layout">
+    <div>
+      <div class="mapbox" id="mapbox">
+        <div class="zoom"><button id="zin" aria-label="Zoom in">+</button><button id="zout" aria-label="Zoom out">−</button><button id="zreset" aria-label="Reset zoom">⟲</button></div>
+        <svg id="map" viewBox="0 0 960 500" role="img" aria-label="World map of Canada's free trade partners. Use the list view for a keyboard-friendly table."></svg>
+      </div>
+      <div id="listview" hidden></div>
+    </div>
+    <aside id="panel" aria-live="polite" aria-label="Country details" tabindex="-1"><h2>Pick a country</h2><p>Tap a country on the map, or search above.</p></aside>
+  </div>
+  <section id="cmp" hidden aria-labelledby="cmpH">
+    <h2 id="cmpH" tabindex="-1">Compare two countries</h2>
+    <div class="cmpsel">
+      <label>Country A <select id="cmpA"></select></label>
+      <label>Country B <select id="cmpB"></select></label>
+      <button id="cmpClose">Close compare</button>
+    </div>
+    <div class="tscroll" id="cmpOut" aria-live="polite"></div>
+  </section>
+  <footer>
+    <p>Agreement list verified <span id="ver"></span> against the <a id="src" href="#">Trade Commissioner Service</a>. Entry-into-force dates were checked against Global Affairs Canada and CBSA pages (see the README).</p>
+    <p>Trade figures are for 2025 (Statistics Canada via Global Affairs Canada). "Not verified" means the source gave no figure, so none is shown.</p>
+    <p>Reference tool, not customs advice. Confirm tariff treatment with the CBSA.</p>
+    <p>Built by Mark Fourmanovskis · <a href="https://www.linkedin.com/in/mark-fourmanovskis/">LinkedIn</a> · <a href="https://github.com/markfourman">GitHub</a></p>
+  </footer>
+</div>
+<script src="data.js"></script>
+<script src="vendor/d3.min.js"></script>
+<script src="vendor/topojson-client.min.js"></script>
+<script>
+const RANK={inforce:4,provisional:3,signed:2,negotiating:1};
+const LABEL={inforce:'In force',provisional:'Provisionally applied',signed:'Signed, not in force',negotiating:'In negotiation',none:'No agreement'};
+const ICON={inforce:'●',provisional:'◉',signed:'○',negotiating:'◌',none:''};
+const yr=d=>d?+String(d).slice(0,4):null;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const NV='<span class="nv">Not verified</span>';
+const mq=window.matchMedia('(max-width:820px)');
+
+// Whole years between a date string and the data's "as of" date (META.lastVerified)
+function age(d){
+  const p=s=>[+s.slice(0,4),+s.slice(5,7)||1,+s.slice(8,10)||1];
+  const [y1,m1,d1]=p(String(d)),[y2,m2,d2]=p(META.lastVerified);
+  const n=y2-y1-((m2<m1||(m2===m1&&d2<d1))?1:0);
+  return n<1?'less than a year':n+(n===1?' year':' years');
+}
+// CAD millions -> "C$14.6 B" or "C$747 M"
+const fmtM=m=>m==null?null:'C$'+(m>=1000?(m/1000).toFixed(1)+' B':Math.round(m).toLocaleString('en-CA')+' M');
+function tradeOf(id){
+  const t=TRADE[id];if(!t)return null;
+  return {t,exp:fmtM(t.exp),imp:fmtM(t.imp),two:(t.exp!=null&&t.imp!=null)?fmtM(t.exp+t.imp):null};
+}
+const tariffFor=(a,id)=>((a.customs&&a.customs.tariff)||[]).filter(x=>!x.members||x.members.includes(id));
+const codeText=x=>x.code==null?'code not verified':'code '+x.code;
+
+// Signed agreements with a known entry-into-force date switch to "in force" on that date.
+// window.__TODAY (YYYY-MM-DD) exists only so tests can mock the date.
+const TODAY=window.__TODAY||new Date().toISOString().slice(0,10);
+for(const a of Object.values(AGREEMENTS)){
+  if(a.status==='signed'&&a.effectiveDate&&a.effectiveDate<=TODAY){
+    a.status='inforce';a.date=a.effectiveDate;delete a.dateLabel;delete a.note;
+  }
+}
+
+// Build country -> agreements index, respecting the timeline year
+function index(year){
+  const m={};
+  for(const [k,a] of Object.entries(AGREEMENTS)){
+    let st=a.status;
+    if(a.historical&&(year>=2026||yr(a.until)<=year)) continue;
+    if(year<2026 && (st==='inforce'||st==='provisional')){ if(!a.date||yr(a.date)>year) continue; }
+    if(year<2026 && st!=='inforce' && st!=='provisional') continue;
+    for(const id of a.members){
+      let s=st;const md=a.memberDates&&a.memberDates[id];
+      if(md&&year<2026&&yr(md.date)>year) continue;
+      (m[id]=m[id]||[]).push({key:k,...a,status:s});
+    }
+  }
+  return m;
+}
+const best=list=>list&&list.length?list.reduce((b,a)=>RANK[a.status]>RANK[b]?a.status:b,'negotiating'):'none';
+
+let IDX=index(2026),year=2026,selected=null,filterAgr='',lastFocus=null;
+const counterEl=document.getElementById('counter');
+function updateCounter(){
+  const inF=Object.values(AGREEMENTS).filter(a=>!a.historical&&(a.status==='inforce'||a.status==='provisional'));
+  const ctry=new Set(inF.flatMap(a=>a.members));
+  counterEl.textContent=`${inF.length} agreements in force · ${ctry.size} partner countries (counted from the data)`;
+}
+updateCounter();
+document.getElementById('ver').textContent=META.lastVerified;
+document.getElementById('src').href=META.listSource;
+
+// Legend + agreement filter
+document.getElementById('legend').innerHTML=Object.keys(LABEL).map(s=>`<li><span class="sw" style="background:var(--${s})"></span>${ICON[s]} ${LABEL[s]}</li>`).join('')+`<li><span class="sw" style="background:var(--red)"></span>Canada</li>`;
+const sel=document.getElementById('agrSel');
+for(const [k,a] of Object.entries(AGREEMENTS)) if(!a.historical) sel.insertAdjacentHTML('beforeend',`<option value="${k}">${k}: ${a.name}</option>`);
+
+// ---------- Details panel ----------
+function tradeBlock(id){
+  const T=tradeOf(id),nm=esc(NAMES[id]);
+  if(!T) return `<div class="agr"><strong>Trade with Canada</strong><p>${NV}. The source page gave no ${META.trade.year} figure for this country.</p></div>`;
+  const t=T.t,hl=(t.hlExp?`Exports: ${esc(t.hlExp)} `:'')+(t.hlImp?`Imports: ${esc(t.hlImp)}`:'');
+  return `<div class="agr"><strong>Trade with Canada (${META.trade.year})</strong>
+    <p>Canadian exports to ${nm}: ${T.exp||NV}</p>
+    <p>Canadian imports from ${nm}: ${T.imp||NV}</p>
+    ${T.two?`<p>Two-way goods trade: ${T.two} (exports + imports)</p>`:''}
+    ${hl?`<p class="small"><strong>Named in the source for ${META.trade.year}:</strong> ${hl}</p>`:''}
+    <p class="small">Top-5 product lists: ${NV} yet.</p>
+    ${t.note?`<p class="small">${esc(t.note)}</p>`:''}
+    <p class="small"><a href="${META.trade.source}">Source</a>: ${esc(META.trade.label)}</p></div>`;
+}
+function customsBlock(list,id){
+  if(year<2026) return '<p>Customs details show today\'s rules. Move the slider back to 2026.</p>';
+  const act=list.filter(a=>a.status==='inforce'||a.status==='provisional');
+  if(!act.length) return '<p>No preferential tariff treatment yet: no agreement is in force with this country.</p>';
+  const rows=act.map(a=>{
+    const c=a.customs||{};
+    const tf=tariffFor(a,id);
+    const tt=tf.length?tf.map(x=>`<strong>${x.abbr}</strong> (${esc(x.name)}), ${codeText(x)}`).join('; '):NV;
+    return `<div class="cu"><p><strong>${a.key}</strong></p>
+      <p>Tariff treatment: ${tt}</p>
+      <p>Origin chapters: ${c.chapters?esc(c.chapters):NV}</p>
+      <p>Proof of origin: ${c.proof?esc(c.proof)+` (<a href="${c.proofSrc}">${esc(c.proofLabel)}</a>)`:NV}</p></div>`}).join('');
+  return (act.length>1?'<p class="small">More than one agreement applies. Compare duty rates and origin rules for your goods.</p>':'')+rows+
+    `<p class="small">Origin chapters: <a href="${CUSTOMS_SRC.rules}">Customs Act schedule, Part 5</a>. Duty rates by product: <a href="${CUSTOMS_SRC.tariff}">CBSA Customs Tariff 2026</a>.Treatment codes: <a href="${CUSTOMS_SRC.codes}">CBSA Memorandum D11-4-2</a>.</p>`;
+}
+function panel(id,quiet){
+  selected=id;const list=(IDX[id]||[]).slice();const name=NAMES[id]||'This country';
+  const p=document.getElementById('panel');
+  const close='<button class="close" id="closeSheet" aria-label="Close details">✕ Close</button>';
+  if(id==='124'){
+    p.innerHTML=close+'<h2 tabindex="-1">Canada</h2><p>Home country. Pick a partner to see its agreements.</p>';
+  }else if(!list.length){
+    p.innerHTML=close+`<h2 tabindex="-1">${esc(name)}</h2><p>No free trade agreement with Canada${year<2026?' in '+year:''}. Trade may still happen under World Trade Organization rules (most-favoured-nation rates).</p>`;
+  }else{
+    p.innerHTML=close+`<h2 tabindex="-1">${esc(name)}</h2>`+list.sort((a,b)=>RANK[b.status]-RANK[a.status]).map(a=>{
+      const md=a.memberDates&&a.memberDates[id];const d=md?md.date:a.date;const v=md?md.verified:a.dateVerified;
+      const live=a.status==='inforce'||a.status==='provisional';
+      const lab=a.dateLabel||(a.status==='provisional'?'Provisionally applied since':'In force since');
+      const yrs=live&&d?` · ${age(d)}`:'';
+      return `<div class="agr"><span class="badge ${a.status}" style="background:var(--${a.status})">${ICON[a.status]} ${LABEL[a.status]}</span>
+      <p><strong>${a.key}</strong>: ${esc(a.name)}</p>
+      ${d?`<p>${lab}: ${d}${yrs} ${v?'':'<span class="nv">(not verified)</span>'}</p>`:''}
+      ${a.note?`<p class="small">${esc(a.note)}</p>`:''}</div>`}).join('')+
+    tradeBlock(id)+
+    `<div class="agr"><strong>For customs</strong>${customsBlock(list,id)}</div>
+     <button class="cmpbtn" id="cmpAdd">Compare with another country</button>`;
+  }
+  const c=document.getElementById('closeSheet');if(c)c.onclick=closeSheet;
+  const a=document.getElementById('cmpAdd');if(a)a.onclick=()=>openCompare(selected);
+  p.classList.add('open');document.body.classList.toggle('sheet',mq.matches);
+  if(mq.matches&&!quiet){const h=p.querySelector('h2');if(h)h.focus({preventScroll:true})}
+  highlight();
+  if(!quiet)try{history.replaceState(null,'','#c='+id)}catch(e){}
+}
+function closeSheet(){
+  document.getElementById('panel').classList.remove('open');document.body.classList.remove('sheet');
+  selected=null;highlight();
+  try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}
+  if(lastFocus&&lastFocus.focus)lastFocus.focus();
+}
+function focusPanel(){const h=document.querySelector('#panel h2');if(h)h.focus()}
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape')return;
+  const pn=document.getElementById('panel');
+  if(mq.matches&&pn.classList.contains('open')){closeSheet();return}
+  if(pn.contains(document.activeElement)&&lastFocus&&lastFocus.focus)lastFocus.focus();
+});
+
+// ---------- Compare ----------
+let CA='',CB='';
+const cmpEl=document.getElementById('cmp'),cmpBtn=document.getElementById('cmpBtn');
+const cmpOpts='<option value="">Choose a country</option>'+Object.keys(NAMES).filter(k=>k!=='124').sort((a,b)=>NAMES[a].localeCompare(NAMES[b])).map(k=>`<option value="${k}">${esc(NAMES[k])}</option>`).join('');
+document.getElementById('cmpA').innerHTML=cmpOpts;document.getElementById('cmpB').innerHTML=cmpOpts;
+function facts(id){
+  const list=(IDX[id]||[]).slice().sort((a,b)=>RANK[b.status]-RANK[a.status]);
+  const act=list.filter(a=>a.status==='inforce'||a.status==='provisional');
+  const live=act;
+  const T=tradeOf(id);
+  return {
+    name:NAMES[id],status:list.length?LABEL[best(list)]:LABEL.none,
+    agr:list.map(a=>a.key).join(', '),
+    since:act.map(a=>{const md=a.memberDates&&a.memberDates[id];return `${a.key}: ${md?md.date:a.date}`}),
+    tf:year<2026?[]:live.flatMap(a=>{const t=tariffFor(a,id);return t.length?t.map(x=>`${x.abbr}, ${codeText(x)}`):[`${a.key}: ${NV}`]}),
+    ch:year<2026?[]:live.map(a=>a.customs&&a.customs.chapters?`${a.key}: ${esc(a.customs.chapters)}`:`${a.key}: ${NV}`),
+    T,hl:T?[T.t.hlExp&&'Exports: '+T.t.hlExp,T.t.hlImp&&'Imports: '+T.t.hlImp].filter(Boolean):[]
+  };
+}
+function renderCompare(){
+  const out=document.getElementById('cmpOut');
+  if(!CA&&!CB){out.innerHTML='<p>Choose two countries above, or click them on the map.</p>';return}
+  const A=CA?facts(CA):null,B=CB?facts(CB):null,y=META.trade.year;
+  const arr=v=>v.length?v.map(s=>s).join('<br>'):'—';
+  const R=[
+    ['Status',f=>esc(f.status)],
+    ['Agreements',f=>f.agr?esc(f.agr):'—'],
+    ['In force since',f=>arr(f.since.map(esc))],
+    ['Tariff treatment',f=>arr(f.tf.map(s=>s.includes('<span')?s:esc(s)))],
+    ['Origin chapters',f=>arr(f.ch)],
+    [`Canadian exports to (${y})`,f=>f.T?(f.T.exp||NV):NV],
+    [`Canadian imports from (${y})`,f=>f.T?(f.T.imp||NV):NV],
+    [`Two-way goods trade (${y})`,f=>f.T&&f.T.two?f.T.two:NV],
+    [`Named for ${y}`,f=>arr(f.hl.map(esc))]
+  ];
+  out.innerHTML=`<table><caption class="sr">Comparison of ${A?esc(A.name):'nothing'} and ${B?esc(B.name):'nothing'}</caption><thead><tr><th scope="col"><span class="sr">Measure</span></th><th scope="col">${A?esc(A.name):'—'}</th><th scope="col">${B?esc(B.name):'—'}</th></tr></thead><tbody>${R.map(([l,fn])=>`<tr><th scope="row">${l}</th><td>${A?fn(A):'—'}</td><td>${B?fn(B):'—'}</td></tr>`).join('')}</tbody></table>
+  <p class="small">Trade figures: <a href="${META.trade.source}">${esc(META.trade.label)}</a> Tariff codes: <a href="${CUSTOMS_SRC.codes}">CBSA Memorandum D11-4-2</a>.</p>`;
+}
+function syncCompare(){document.getElementById('cmpA').value=CA;document.getElementById('cmpB').value=CB;renderCompare()}
+function openCompare(id){
+  if(id&&id!=='124'&&id!==CA&&id!==CB){if(!CA)CA=id;else if(!CB)CB=id;else{CA=CB;CB=id}}
+  cmpEl.hidden=false;cmpBtn.setAttribute('aria-expanded','true');syncCompare();
+  if(mq.matches)closeSheetKeep();
+  cmpEl.scrollIntoView({block:'start'});document.getElementById('cmpH').focus({preventScroll:true});
+}
+function closeSheetKeep(){document.getElementById('panel').classList.remove('open');document.body.classList.remove('sheet')}
+function closeCompare(){cmpEl.hidden=true;cmpBtn.setAttribute('aria-expanded','false');cmpBtn.focus()}
+cmpBtn.onclick=()=>cmpEl.hidden?openCompare(selected):closeCompare();
+document.getElementById('cmpClose').onclick=closeCompare;
+document.getElementById('cmpA').onchange=e=>{CA=e.target.value;renderCompare()};
+document.getElementById('cmpB').onchange=e=>{CB=e.target.value;renderCompare()};
+
+// Map or list click: while Compare is open it fills the next slot, otherwise it opens the details
+function pick(id){
+  lastFocus=document.activeElement;
+  if(!cmpEl.hidden&&id!=='124'){
+    if(id!==CA&&id!==CB){if(!CA)CA=id;else if(!CB)CB=id;else{CA=CB;CB=id}}
+    selected=id;syncCompare();highlight();return;
+  }
+  panel(id);
+}
+
+// ---------- Map ----------
+let paths,zoom,svg=d3.select('#map'),g;
+function color(id){if(id==='124')return 'var(--red)';const s=best(IDX[id]);return `var(--${s})`}
+function highlight(){
+  if(!paths)return;
+  paths.attr('fill',d=>color(d.id)).classed('sel',d=>d.id===selected)
+       .classed('dim',d=>filterAgr&&d.id!=='124'&&!(IDX[d.id]||[]).some(a=>a.key===filterAgr))
+       .attr('tabindex',d=>IDX[d.id]?0:-1)
+       .attr('aria-label',d=>`${NAMES[d.id]||d.properties.name}: ${LABEL[best(IDX[d.id])]}`);
+}
+function fromHash(){const m=location.hash.match(/c=(\d{3})/);if(m&&NAMES[m[1]])panel(m[1])}
+fetch('vendor/countries-50m.json').then(r=>r.json()).then(world=>{
+  const feats=topojson.feature(world,world.objects.countries).features.filter(f=>f.id!=='010');
+  const proj=d3.geoNaturalEarth1().fitSize([960,500],{type:'FeatureCollection',features:feats});
+  const path=d3.geoPath(proj);g=svg.append('g');
+  paths=g.selectAll('path').data(feats).join('path').attr('class','c').attr('d',path)
+    .attr('role','button')
+    .on('click',(e,d)=>pick(d.id)).on('keydown',(e,d)=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick(d.id);if(cmpEl.hidden)focusPanel()}});
+  paths.append('title').text(d=>NAMES[d.id]||d.properties.name);
+  zoom=d3.zoom().scaleExtent([1,12]).on('zoom',e=>g.attr('transform',e.transform));svg.call(zoom);
+  document.getElementById('zin').onclick=()=>svg.transition().call(zoom.scaleBy,1.6);
+  document.getElementById('zout').onclick=()=>svg.transition().call(zoom.scaleBy,1/1.6);
+  document.getElementById('zreset').onclick=()=>svg.transition().call(zoom.transform,d3.zoomIdentity);
+  highlight();
+}).catch(()=>{document.getElementById('notice').innerHTML='<p class="notice">The map could not load. The list view below has all the same data.</p>';toggleList(true)});
+
+// ---------- List view (keyboard + screen-reader alternative) ----------
+let sortKey='name',sortDir=1;
+function rows(){
+  return Object.keys(IDX).filter(id=>!filterAgr||IDX[id].some(a=>a.key===filterAgr)).map(id=>({id,name:NAMES[id]||id,status:best(IDX[id]),agrs:IDX[id].map(a=>a.key).join(', ')}));
+}
+function renderList(){
+  const q=document.getElementById('q').value.toLowerCase();
+  const r=rows().filter(x=>!q||x.name.toLowerCase().includes(q)||x.agrs.toLowerCase().includes(q))
+    .sort((a,b)=>sortKey==='status'?(RANK[b.status]-RANK[a.status])*sortDir:a[sortKey].localeCompare(b[sortKey])*sortDir);
+  document.getElementById('listview').innerHTML=`<table><caption class="sr">Countries and their agreements with Canada</caption><thead><tr>
+  <th><button data-k="name">Country ⇅</button></th><th><button data-k="status">Status ⇅</button></th><th>Agreements</th></tr></thead><tbody>
+  ${r.map(x=>`<tr><td><button data-id="${x.id}">${esc(x.name)}</button></td><td>${ICON[x.status]} ${LABEL[x.status]}</td><td>${x.agrs}</td></tr>`).join('')}</tbody></table>`;
+  document.querySelectorAll('#listview th button').forEach(b=>b.onclick=()=>{sortDir=sortKey===b.dataset.k?-sortDir:1;sortKey=b.dataset.k;renderList()});
+  document.querySelectorAll('#listview td button').forEach(b=>b.onclick=()=>{pick(b.dataset.id);if(cmpEl.hidden)focusPanel()});
+}
+function toggleList(on){
+  const btn=document.getElementById('viewBtn');on=on??btn.getAttribute('aria-pressed')!=='true';
+  btn.setAttribute('aria-pressed',on);document.getElementById('listview').hidden=!on;document.getElementById('mapbox').hidden=on;
+  btn.textContent=on?'Map view':'List view';if(on)renderList();
+}
+document.getElementById('viewBtn').onclick=()=>toggleList();
+
+// Search: jump to first matching country
+document.getElementById('q').addEventListener('input',e=>{
+  const q=e.target.value.toLowerCase().trim();if(!document.getElementById('listview').hidden)renderList();
+  if(q.length<3)return;
+  const id=Object.keys(NAMES).find(k=>NAMES[k].toLowerCase().startsWith(q));if(id)panel(id,true);
+});
+sel.onchange=()=>{filterAgr=sel.value;highlight();if(!document.getElementById('listview').hidden)renderList()};
+const yIn=document.getElementById('year');
+yIn.oninput=()=>{year=+yIn.value;document.getElementById('yearOut').textContent=year;IDX=index(year);highlight();if(selected)panel(selected,true);if(!document.getElementById('listview').hidden)renderList();if(!cmpEl.hidden)renderCompare()};
+fromHash();
+</script>
+</body>
+</html>
