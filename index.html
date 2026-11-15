@@ -135,7 +135,11 @@ footer{font-size:.85rem;padding:16px 0 32px}
 </div>
 <script src="data.js"></script>
 <script src="vendor/d3.min.js"></script>
+<script>window.d3||document.write('<script src="d3.min.js"><\/script>')</script>
+<script>window.d3||document.write('<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"><\/script>')</script>
 <script src="vendor/topojson-client.min.js"></script>
+<script>window.topojson||document.write('<script src="topojson-client.min.js"><\/script>')</script>
+<script>window.topojson||document.write('<script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"><\/script>')</script>
 <script>
 const RANK={inforce:4,provisional:3,signed:2,negotiating:1};
 const LABEL={inforce:'In force',provisional:'Provisionally applied',signed:'Signed, not in force',negotiating:'In negotiation',none:'No agreement'};
@@ -349,7 +353,9 @@ function highlight(){
        .attr('aria-label',d=>`${NAMES[d.id]||d.properties.name}: ${LABEL[best(IDX[d.id])]}`);
 }
 function fromHash(){const m=location.hash.match(/c=(\d{3})/);if(m&&NAMES[m[1]])panel(m[1])}
-fetch('vendor/countries-50m.json').then(r=>r.json()).then(world=>{
+const MAPSRC=['vendor/countries-50m.json','countries-50m.json','https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json'];
+const loadMap=i=>fetch(MAPSRC[i]).then(r=>{if(!r.ok)throw 0;return r.json()}).catch(e=>{if(i+1<MAPSRC.length)return loadMap(i+1);throw e});
+loadMap(0).then(world=>{
   const feats=topojson.feature(world,world.objects.countries).features.filter(f=>f.id!=='010');
   const proj=d3.geoNaturalEarth1().fitSize([960,500],{type:'FeatureCollection',features:feats});
   const path=d3.geoPath(proj);g=svg.append('g');
